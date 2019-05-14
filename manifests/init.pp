@@ -85,7 +85,7 @@ class domain_membership (
 
   exec { 'join_domain':
     environment => [ "Password=${_password}" ],
-    command     => "exit (Get-WmiObject -Class Win32_ComputerSystem).JoinDomainOrWorkGroup('${domain}',\$Password,'${username}@${_user_domain}',${machine_ou},${join_options}).ReturnValue",
+    command     => "exit (Get-WmiObject -Class Win32_ComputerSystem).JoinDomainOrWorkGroup('${domain}',\$env:Password,'${username}@${_user_domain}',${machine_ou},${join_options}).ReturnValue",
     unless      => "if((Get-WmiObject -Class Win32_ComputerSystem).domain -ne '${domain}'){ exit 1 }",
     provider    => powershell,
   }
@@ -93,7 +93,7 @@ class domain_membership (
   if $resetpw {
     exec { 'reset_computer_trust':
       environment => [ "Password=${_password}" ],
-      command     => "netdom /RESETPWD /UserD:${_reset_username} /PasswordD:\$Password /Server:${domain}",
+      command     => "netdom /RESETPWD /UserD:${_reset_username} /PasswordD:\$env:Password /Server:${domain}",
       unless      => "if ($(nltest /sc_verify:${domain}) -match 'ERROR_INVALID_PASSWORD') {exit 1}",
       provider    => powershell,
       require     => Exec['join_domain'],
