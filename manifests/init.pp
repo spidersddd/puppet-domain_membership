@@ -66,7 +66,7 @@ class domain_membership (
   if $secure_password {
     $_password = ("(New-Object System.Management.Automation.PSCredential('user',(convertto-securestring '${password}'))).GetNetworkCredential().password")
   }else{
-    $_password = "'${password}'"
+    $_password = "${password}"
   }
 
   # Allow an optional user_domain to accomodate multi-domain AD forests
